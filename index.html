@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        .main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: arial;
+        }
+
+        h2 {
+            font-size: 30px;
+        }
+
+        button {
+            padding:10px;
+            background-color:#fe7968;
+            font-size: 30px;
+            color: #FFFFFF;
+            border: 0px;
+            cursor:pointer;
+            border-radius: 5px;
+        }
+        #output {
+            background-color:#FAFAFA;
+            padding:10px;
+            width: 100%;
+            margin-top:20px;
+            line-height:30px;
+        }
+        .hide {
+            display:none;
+        }
+        .show {
+            display:block;
+        }
+    </style>
+    <title>JavaScript Speech to Text</title>
+</head>
+<body>
+<div class="main">
+    <h2>Speech Recognition</h2>
+    <select id="select">
+        <option value="ka-GE">Georgian</option>
+        <option value="en-US">English (US)</option>
+    </select>
+    <p><button type="button" onclick="runSpeechRecognition()">Speech to Text</button> &nbsp; <span id="action"></span></p>
+    <div id="output" class="hide"></div>
+</div>
+
+<script>
+    function runSpeechRecognition() {
+        var output = document.getElementById("output");
+        var action = document.getElementById("action");
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var recognition = new SpeechRecognition();
+        recognition.lang = document.querySelector("#select").value;
+
+        recognition.onstart = function() {
+            console.log(recognition.lang)
+            action.innerHTML = "<small>listening, please speak...</small>";
+        };
+
+        recognition.onspeechend = function() {
+            action.innerHTML = "<small>stopped listening</small>";
+            recognition.stop();
+        }
+
+        recognition.onresult = function(event) {
+            var transcript = event.results[0][0].transcript;
+            var words = transcript.split(" ");
+            var curseWords = [
+                'fuck'
+                //add more here :D
+            ]
+
+            words.forEach(function(item, index, object) {
+                if (curseWords.includes(item)) {
+                    words[index] = "***";
+                }
+            });
+
+            output.innerHTML = "<b>Recognized speech:</b> " + words.join(' ');
+            output.classList.remove("hide");
+        };
+
+        recognition.start();
+    }
+</script>
+</body>
+</html>
